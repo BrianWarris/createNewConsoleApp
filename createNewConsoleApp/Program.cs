@@ -1,86 +1,49 @@
 ﻿using System;
-
 using System.Collections.Generic;
-
 using System.ComponentModel;
-
 using System.Configuration;
-
 using System.Diagnostics;
-
 using System.Globalization;
-
 using System.IO;
-
 using System.Linq;
-
 using System.Text;
-
 using System.Threading.Tasks;
-
 using Microsoft.Win32;
 
-
-
+// justification for this app:  to cheap to buy licence for Visual Studio. Use msbuild to build instead.
+// This app facilitates the initial creation of a console app.
 namespace createNewConsoleApp
-
 {
-
     class Program
-
     {
-
-
         const char  openBrace = '{',
                    closeBrace = '}';
 
         static void Main(String[] args)
-
         {
-
             AppSettingsReader asr = new AppSettingsReader();
-
             string rootFolder = string.Empty;
-
             GetConfigValue<string>(asr, "rootFolder", ref rootFolder, "");
- 
-           bool showSyntax = false;
-
+            bool showSyntax = false;
 
             if (((args == null) || (args.Length == 0)) || (args[0] == "/?") || (args[0].ToLower() == "--h"))
- 
             {
-
                 showSyntax = true;
-
             }
-
-
             if (showSyntax)
-
             {
-
                 Console.Out.WriteLine($"SYNTAX:  createNewConsoleApp  consoleAppName{Environment.NewLine}will set up a new solution consoleAppName, under {rootFolder}");
-
             }
-
             else
-
             {
-
                 string childPath = Path.Combine(rootFolder, args[0]);
-
                 if (Directory.Exists(childPath))
-
                 {
-
                     Console.Out.WriteLine($"Folder {childPath} already exists. Solution for {args[0]} will not be created.");
                 }
                 else
                 {
-                    Console.Out.WriteLine($"Folder {childPath} and associated folders and files will be created.");
                     string csprojPath = Path.Combine(childPath, args[0]);
-
                     string propertiesPath = Path.Combine(csprojPath, "Properties");
                     CreateNewFolders(new string [] { rootFolder, csprojPath, propertiesPath} );
                     // we need three new guids: one each for solution, project and postSolution
@@ -93,10 +56,9 @@ namespace createNewConsoleApp
                     CreateNewBuildProj(childPath, args[0]);
                     CreateNewProjectFiles(csprojPath, args[0], guids[1]);  // creates csproj, Program.cs and App.config
                     CreateNewAssemblyInfo(propertiesPath, args[0], guids[1]);
-                }
- 
+                    Console.Out.WriteLine($"Folder {childPath} and associated folders and files have been created.");
+               }
            }
-
         }
         private static void CreateNewFolders(string [] newFolders)
         {
@@ -111,17 +73,14 @@ namespace createNewConsoleApp
              string slnFile = $"{appName}.sln";
              string fPath = Path.Combine(rootFolder, slnFile);
              TextWriter tw = new StreamWriter(fPath, false);
-
              tw.Write($"{Environment.NewLine}Microsoft Visual Studio Solution File, Format Version 12.00{Environment.NewLine}" +
                  $"# Visual Studio 15{Environment.NewLine}" +
                  $"VisualStudioVersion = 15.0.27004.2009{Environment.NewLine}" +
                  $"MinimumVisualStudioVersion = 10.0.40219.1{Environment.NewLine}Project(\"{openBrace}");
-
              tw.Write(guids[0].ToString());
-             tw.Write($"{closeBrace}\") = \"{appName}\", \"{appName}.{appName}.csproj\", \"{openBrace}");
+             tw.Write($"{closeBrace}\") = \"{appName}\", \"{appName}\\{appName}.csproj\", \"{openBrace}");
              tw.Write(guids[1].ToString());
-             tw.WriteLine("{closeBrace}\"");
-
+             tw.WriteLine($"{closeBrace}\"");
              tw.WriteLine($"EndProject{Environment.NewLine}" +
                  $"Global{Environment.NewLine}" +
                  $"	GlobalSection(SolutionConfigurationPlatforms) = preSolution{Environment.NewLine}" +
@@ -129,7 +88,6 @@ namespace createNewConsoleApp
                  $"		Release|Any CPU = Release|Any CPU{Environment.NewLine}" +
                  $"	EndGlobalSection{Environment.NewLine}" +
                  $"	GlobalSection(ProjectConfigurationPlatforms) = postSolution{Environment.NewLine}");
-
              tw.WriteLine($"		{openBrace}{guids[1]}{closeBrace}.Debug|Any CPU.ActiveCfg = Debug|Any CPU");
              tw.WriteLine($"		{openBrace}{guids[1]}{closeBrace}.Debug|Any CPU.Build.0 = Debug|Any CPU");
              tw.WriteLine($"		{openBrace}{guids[1]}{closeBrace}.Release|Any CPU.ActiveCfg = Release|Any CPU");
@@ -271,7 +229,7 @@ namespace createNewConsoleApp
                  $"using System.Globalization;{Environment.NewLine}" +
                  $"using System.IO;{Environment.NewLine}" +
                  $"using System.Linq;");
-             tw.WriteLine($"using System.Text{Environment.NewLine}" +
+             tw.WriteLine($"using System.Text;{Environment.NewLine}" +
                  $"using System.Threading.Tasks;{Environment.NewLine}" +
                  $"using Microsoft.Win32;{Environment.NewLine}" +
                  $"{Environment.NewLine}namespace {appName}");
@@ -286,7 +244,7 @@ namespace createNewConsoleApp
 
              // finally app.config
              fPath = Path.Combine(csprojPath, "App.config");
-             tw = new StreamWriter(fPath, false, Encoding.Unicode);
+             tw = new StreamWriter(fPath, false, Encoding.UTF8);
              tw.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\" ?>");
              tw.WriteLine($"<configuration>{Environment.NewLine}" +
                  $"    <startup>{Environment.NewLine}" +
@@ -339,63 +297,34 @@ namespace createNewConsoleApp
              tw.Flush();
              tw.Close();
         }
-
-        
+     
         /// <summary>
-
         /// GetConfigValue
-
         /// </summary>
-
         /// <typeparam name="T">passed type</typeparam>
-
         /// <param name="appSettingsReader">System.Configuration.AppSettingsReader</param>
-
         /// <param name="keyName">string</param>
-
         /// <param name="keyValue">ref T</param>
-
         /// <param name="defaultValue">T</param>
-
         private static void GetConfigValue<T>(System.Configuration.AppSettingsReader appSettingsReader,
-
                                         string keyName, ref T keyValue, T defaultValue)
-
         {
-
             keyValue = defaultValue;
             // provide a default
-
             try
-
             {
-
                 string tempS = (string)appSettingsReader.GetValue(keyName, typeof(System.String));
-
                 if ((tempS != null) && (tempS.Trim().Length > 0))
-
                 {
-
                     keyValue = (T)TypeDescriptor.GetConverter(keyValue.GetType()).ConvertFrom(tempS);
-
                 }
-
                 else
-
                     Debug.WriteLine("Registry failed to read value from " + keyName);
-
             }
-
             catch (Exception ex)
-
             {
-
                 Debug.WriteLine(ex.ToString());  // if key does not exist, not a problem. Caller must pre-assign values anyway
-
             }
-
         }
-
     }
-
 }
