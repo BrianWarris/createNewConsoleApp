@@ -1,0 +1,7 @@
+C:\Users\Brian\source\repos\createNewConsoleApp\OutDir\createNewConsoleApp.exe.config
+C:\Users\Brian\source\repos\createNewConsoleApp\OutDir\createNewConsoleApp.exe
+C:\Users\Brian\source\repos\createNewConsoleApp\OutDir\createNewConsoleApp.pdb
+C:\Users\Brian\source\repos\createNewConsoleApp\createNewConsoleApp\obj\Release\createNewConsoleApp.csprojResolveAssemblyReference.cache
+C:\Users\Brian\source\repos\createNewConsoleApp\createNewConsoleApp\obj\Release\createNewConsoleApp.exe
+C:\Users\Brian\source\repos\createNewConsoleApp\createNewConsoleApp\obj\Release\createNewConsoleApp.pdb
+C:\Users\Brian\source\repos\createNewConsoleApp\createNewConsoleApp\obj\Release\createNewConsoleApp.csproj.CoreCompileInputs.cache
