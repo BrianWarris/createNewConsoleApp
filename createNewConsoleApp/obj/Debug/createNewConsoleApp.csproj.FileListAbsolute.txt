@@ -1,2 +1,0 @@
-C:\Users\Brian\source\repos\createNewConsoleApp\createNewConsoleApp\obj\Debug\createNewConsoleApp.csprojResolveAssemblyReference.cache
-C:\Users\Brian\source\repos\createNewConsoleApp\createNewConsoleApp\obj\Debug\createNewConsoleApp.csproj.CoreCompileInputs.cache
